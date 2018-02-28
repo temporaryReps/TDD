@@ -1,3 +1,4 @@
+
 public class MockShootStratagy implements ShootStrategy {
     @Override
     public Point getShootPoint() {

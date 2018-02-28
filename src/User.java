@@ -1,3 +1,4 @@
+
 public class User {
     private ShootStrategy shootStrategy;
     private char sign;

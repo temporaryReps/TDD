@@ -1,8 +1,13 @@
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 public class Game {
     public static final int SIZE = 3;
     private char[][] cells;
     private User user1;
     private User user2;
+
+    private OutputStream outputStream;
 
     public void initCells() {
         cells = new char[SIZE][SIZE];
@@ -31,8 +36,20 @@ public class Game {
     }
 
     public Status getGameStatus() {
-        if (cells[0][0] == cells[0][1] && cells[0][1] == cells[0][2] && cells[0][1] != '.') {
-            return cells[0][0] == 'X' ? Status.X_WIN : Status.O_WIN;
+        for (int i = 0; i < SIZE; i++) {
+            if (cells[i][0] == cells[i][1] && cells[i][1] == cells[i][2] && cells[i][1] != '.') {
+                return cells[i][0] == 'X' ? Status.X_WIN : Status.O_WIN;
+            }
+
+            if (cells[0][i] == cells[1][i] && cells[1][i] == cells[2][i] && cells[1][i] != '.') {
+                return cells[1][i] == 'X' ? Status.X_WIN : Status.O_WIN;
+            }
+        }
+
+        if (cells[0][0] == cells[1][1] && cells[1][1] == cells[2][2] && cells[1][1] != '.'
+                ||
+                cells[2][0] == cells[1][1] && cells[1][1] == cells[0][2] && cells[1][1] != '.') {
+            return cells[1][1] == 'X' ? Status.X_WIN : Status.O_WIN;
         }
 
         for (int i = 0; i < SIZE; i++) {
@@ -104,6 +121,7 @@ public class Game {
 
         initCells();
     }
+
 
     public enum Status {X_WIN, DRAW, PLAYING, O_WIN}
 }
