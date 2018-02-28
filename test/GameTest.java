@@ -1,10 +1,9 @@
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
@@ -15,13 +14,13 @@ public class GameTest {
     private Game game;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         game = new Game();
         game.initCells();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
 
     }
 
@@ -97,8 +96,70 @@ public class GameTest {
         assertEquals(Game.Status.DRAW, game.getGameStatus());
     }
 
+    /**
+     * user X is winner if all vertical cells are filled 'X'
+     */
+    @Test
+    public void testWinVertical() {
+        for (int i = 0; i < Game.SIZE; i++) {
+            setUp();
+            for (int j = 0; j < Game.SIZE; j++) {
+                game.setShootPoint(new Point(i, j), 'X');
+            }
+            assertEquals(Game.Status.X_WIN, game.getGameStatus());
+        }
+    }
+
+    /**
+     * user X is winner if all horizontal cells are filled 'X'
+     */
+    @Test
+    public void testXWinHorizontal() {
+        for (int i = 0; i < Game.SIZE; i++) {
+            setUp();
+            for (int j = 0; j < Game.SIZE; j++) {
+                game.setShootPoint(new Point(j, i), 'X');
+            }
+            assertEquals(Game.Status.X_WIN, game.getGameStatus());
+        }
+    }
+
+    /**
+     * user X is winner if all diagonal cells are filled 'X'
+     */
+    @Test
+    public void testXWinDiagonal() {
+        for (int i = 0; i < Game.SIZE; i++) {
+            game.setShootPoint(new Point(i, i), 'X');
+        }
+        assertEquals(Game.Status.X_WIN, game.getGameStatus());
+
+        setUp();
+        for (int i = 0; i < Game.SIZE; i++) {
+            game.setShootPoint(new Point((Game.SIZE - 1) - i, i), 'X');
+        }
+        assertEquals(Game.Status.X_WIN, game.getGameStatus());
+    }
+
     @Test
     public void testGameStart() throws UnsupportedEncodingException {
+        //redefine System.out
+        OutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        String gameFinalOutput =
+                "Введите координаты в формате: x y (от 0 до 2)\n" +
+                        "X . .\n. . .\n. . .\n\n" +
+                        "Введите координаты в формате: x y (от 0 до 2)\n" +
+                        "X . O\n. . .\n. . .\n\n" +
+                        "Введите координаты в формате: x y (от 0 до 2)\n" +
+                        "X . O\nX . .\n. . .\n\n" +
+                        "Введите координаты в формате: x y (от 0 до 2)\n" +
+                        "X . O\nX O .\n. . .\n\n" +
+                        "Введите координаты в формате: x y (от 0 до 2)\n" +
+                        "X . O\nX O .\nX . .\n\n" +
+                        Game.Status.X_WIN + "\n";
+
         String mockInputForUser1 = "0 0\n0 1\n0 2\n";
         String mockInputForUser2 = "2 0\n1 1\n2 2\n";
         InputStream mockInputStream1 = new ByteArrayInputStream(mockInputForUser1.getBytes(StandardCharsets.UTF_8.name()));
@@ -116,6 +177,7 @@ public class GameTest {
         game.initCells();
         game.start();
 
+        assertEquals(gameFinalOutput, outputStream.toString());
         assertEquals(Game.Status.X_WIN, game.getGameStatus());
     }
 }
